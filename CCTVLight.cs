@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CCTVLight : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class CCTVLight : MonoBehaviour
 
     public Light CCTV;
     public Light FlashLight;
-
+    public bool isShutter;
     [HideInInspector] public Camera cam;
     [HideInInspector] public Color original;
 
@@ -31,13 +32,13 @@ public class CCTVLight : MonoBehaviour
         hac.isLightOn = true;
         GameMng.Instance.energy -= 0.5f;
         AudioMng.Instance.BgmOn("FlashLight");
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(0.2f);
         hac.isLightOn = false;
         FlashLight.enabled = false;
         yield return new WaitForSeconds(10f);
         isShutter = false;
     }
-    bool isShutter;
+
     void Flash()
     {
         if(hac.isBlack == false)

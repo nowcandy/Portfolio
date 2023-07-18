@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     public float stamina;
     [SerializeField] float speed;
 
-    [SerializeField] int mouseSensitive;
+    public float mouseSensitive;
 
     float isRun = 1;
 

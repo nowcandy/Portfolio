@@ -16,6 +16,11 @@ public class AudioMng : MonoBehaviour
             Destroy(this);
     }
 
+    public void BgmPause(string bgm)
+    {
+        Bgms.Find(x => x.name == bgm).Pause();
+    }
+
     public void BgmOn(string bgm)
     {
         Bgms.Find(x => x.name == bgm).Play();

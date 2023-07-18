@@ -35,6 +35,7 @@ public class GameMng : MonoBehaviour
 
     bool isPowerDown;
     bool isBgm;
+    bool isPlay;
 
     public GameObject[] allLight;
     public RobotCtrl[] robot;
@@ -65,8 +66,19 @@ public class GameMng : MonoBehaviour
             robot[num].enabled = false;
         }
     }
-    bool isPlay;
+    bool isSkip;
     void Update()
+    {
+        StageData();
+        GameEndCheck();
+        if(Input.GetKeyDown(KeyCode.L) && isSkip == false)
+        {
+            isSkip = true;
+            time = 238;
+        }
+    }
+
+    void StageData()
     {
         stage = DataManager.Instance.data.stage;
         if (stage == 1 && isPlay == false)
@@ -74,10 +86,10 @@ public class GameMng : MonoBehaviour
             isPlay = true;
             AudioMng.Instance.BgmOn("Tutorial");
         }
-        stagePower = 0.15f + 0.025f * stage;
+        stagePower = 0.17f + 0.021f * stage;
         dayText.text = stage + "";
-        GameEndCheck();
     }
+
     void GameEndCheck()
     {
         if (player.isDead == false)
@@ -102,7 +114,7 @@ public class GameMng : MonoBehaviour
         else
             count = 4;
 
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i <= count; i++)
         {
             robot[i].enabled = true;
         }
@@ -120,7 +132,7 @@ public class GameMng : MonoBehaviour
             usePowerUI[i].enabled = true;
         }
     }
-
+    int animalMove;
     void StageMng()
     {
         if(isClearStage == false)
@@ -143,6 +155,14 @@ public class GameMng : MonoBehaviour
                 {
                     StartCoroutine(StageClear());
                 }
+                if (stage < 7)
+                    animalMove = stage;
+                else
+                    animalMove = 6;
+                for (int i = 0; i < animalMove; i++)
+                {
+                    animal[i].RandomMove();
+                }
             }
             else
             {
@@ -155,7 +175,7 @@ public class GameMng : MonoBehaviour
     {
         if(isEnd == false)
         {
-            DataManager.Instance.data.Stage(6);
+            DataManager.Instance.data.stage = 6;
             DataManager.Instance.SaveGameData();
             isEnd = true;
             SceneManager.LoadScene("Dead");
@@ -203,6 +223,7 @@ public class GameMng : MonoBehaviour
 
     IEnumerator Dead()
     {
+        player.transform.position = new Vector3(0, 1, -5);
         jumpAnimator.enabled = true;
         jumpAnimator.SetBool("isJumpScare", true);
         jumpLight.enabled = true;
@@ -234,11 +255,8 @@ public class GameMng : MonoBehaviour
         for (int num = 0; num < robot.Length; num++)
         {
             robot[num].temp = 0;
-            robot[num].GetComponent<Animator>().SetTrigger("Standing");
             robot[num].transform.position = robot[num].movePosition[0];
         }
-        if(stage != 6)
-            animal[stage].RandomMove();
         player.transform.position = new Vector3(0, 1, -5);
         timeText.text = 12 + "";
         isClearStage = true;
@@ -246,13 +264,14 @@ public class GameMng : MonoBehaviour
         energy = 100f;
         time = 0f;
         clearImage.SetActive(true);
-        DataManager.Instance.data.Stage(stage);
+        DataManager.Instance.data.stage = stage;
         DataManager.Instance.SaveGameData();
         AudioMng.Instance.BgmOn("ClearClock");
         yield return new WaitForSeconds(4f);
         AudioMng.Instance.BgmOn("Clear");
         yield return new WaitForSeconds(4f);
         clearImage.SetActive(false);
+        isSkip = false;
         isClearStage = false;
     }
 }

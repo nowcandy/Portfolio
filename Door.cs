@@ -35,17 +35,20 @@ public class Door : MonoBehaviour
                 else
                 {
                     jumpScare.SetActive(true);
-                    AudioMng.Instance.BgmOn("Bunny");
-                    GameMng.Instance.player.isDead = true;
+                    if(GameMng.Instance.player.isDead == false)
+                    {
+                        AudioMng.Instance.BgmOn("Bunny");
+                        GameMng.Instance.player.isDead = true;
+                    }
                 }
             }
             else
             {
                 if (chargeTime > 0)
-                    chargeTime -= Time.deltaTime * 2;
+                    chargeTime -= Time.deltaTime * 3;
                 else
                 {
-                    chargeTime = maxChargeTime;
+                    chargeTime = 0;
                 }
             }
 

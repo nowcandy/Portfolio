@@ -26,7 +26,14 @@ public class DataManager : MonoBehaviour
     }
     [SerializeField] TextMeshProUGUI continueText;
     [SerializeField] GameObject tutorialUI;
+    [SerializeField] GameObject storyUI;
 
+    [SerializeField] TextMeshProUGUI story;
+    [SerializeField] TextMeshProUGUI manual;
+
+    [SerializeField] int temp;
+
+    bool isNewGame;
     public bool clearCheck;
     void Start()
     {
@@ -43,6 +50,33 @@ public class DataManager : MonoBehaviour
                 clearCheck = true;
         }
         ContinueCheck();
+        Tutorial();
+    }
+
+    void Tutorial()
+    {
+        if (isNewGame == true)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+
+            {
+                if (temp == 0)
+                {
+                    storyUI.SetActive(true);
+                    tutorialUI.SetActive(false);
+                    story.enabled = true;
+                    temp = 1;
+                }
+                else if (temp == 1)
+                {
+                    story.enabled = false;
+                    manual.enabled = true;
+                    temp = 2;
+                }
+                else
+                    SceneManager.LoadScene("Game");
+            }
+        }
     }
 
     // --- 게임 데이터 파일이름 설정 ("원하는 이름(영문).json") --- //
@@ -74,11 +108,14 @@ public class DataManager : MonoBehaviour
 
     public void NewGame()
     {
-        data.Stage(1);
+        data.stage = 1;
+        data.value = 0.5f;
+        data.volume = 0;
+        data.mouseSensetive = 250;
+        data.mouseSensetiveValue = 0.5f;
         SaveGameData();
         tutorialUI.SetActive(true);
-        if (Input.GetKeyDown(KeyCode.Space))
-            SceneManager.LoadScene("Game");
+        isNewGame = true;
     }
 
     public void Exit()

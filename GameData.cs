@@ -5,9 +5,9 @@ using System;
 public class Data
 {
     public int stage;
+    public float volume;
+    public float value;
 
-    public void Stage(int num)
-    {
-        stage = num;
-    }
+    public float mouseSensetive;
+    public float mouseSensetiveValue;
 }

@@ -123,7 +123,7 @@ public class RobotCtrl : MonoBehaviour
 
     void Catherine()
     {
-        if (isTemp == false && type == Type.Cloudy)
+        if (isTemp == false && type == Type.Honey)
             StartCoroutine(Shame());
     }
 
@@ -139,9 +139,13 @@ public class RobotCtrl : MonoBehaviour
             {
                 if (tempTime >= moveTime)
                 {
+                    int random = Random.Range(-1, 1);
+                    if (random == -1)
+                    {
+                        temp++;
+                        transform.position = movePosition[temp];
+                    }
                     tempTime = 0;
-                    temp++;
-                    transform.position = movePosition[temp];
                 }
                 else
                     tempTime += Time.deltaTime;
@@ -202,7 +206,7 @@ public class RobotCtrl : MonoBehaviour
                     {
                         jumpScare.SetActive(true);
                         if(player.isDead == false)
-                            AudioMng.Instance.BgmOn("Cloudy");
+                            AudioMng.Instance.BgmOn("Froggy");
                         walk.Stop();
                         nav.enabled = false;
                         transform.position = movePosition[0];
@@ -322,7 +326,7 @@ public class RobotCtrl : MonoBehaviour
     IEnumerator Shame()
     {
         isTemp = true;
-        int ranTime = Random.Range(5, 31);
+        int ranTime = Random.Range(10, 21);
         yield return new WaitForSeconds(ranTime * 2);
         isCrazy = true;
         yield return new WaitForSeconds(6);
@@ -338,8 +342,15 @@ public class RobotCtrl : MonoBehaviour
         if (GameMng.Instance.isClearStage == false)
         {
             randomInt = Random.Range(-1, 4);
-            if (randomInt > 0)
+            if (randomInt < 1)
                 randomInt = 1;
+            else if (randomInt < 2)
+                randomInt = 2;
+            else if (randomInt < 3)
+                randomInt = -1;
+            else
+                randomInt = 0;
+
         }
         else
             randomInt = 0;
@@ -369,10 +380,14 @@ public class RobotCtrl : MonoBehaviour
             }
         }
     }
-    int count = 8;
+    int count = 10;
     IEnumerator DoorStep()
     {
         isDefense = true;
+        if (type == Type.RedBelly)
+            transform.localEulerAngles = new Vector3(0, -90, 0);
+        else
+            transform.localEulerAngles = new Vector3(0, 90, 0);
         yield return new WaitForSeconds(count);
         int randomAttack = Random.Range(0, 2);
         if (randomAttack == 0)
@@ -383,7 +398,7 @@ public class RobotCtrl : MonoBehaviour
         }
         else
         {
-            if (isDoor == true)
+            if (isDoor == true && GameMng.Instance.isClearStage == false && player.isDead == false)
             {
                 switch (type)
                 {
@@ -408,6 +423,7 @@ public class RobotCtrl : MonoBehaviour
                 count = 8;
                 temp = 0;
                 Debug.Log("돌아갔습니다");
+                transform.localEulerAngles = new Vector3(0, 0, 0);
                 transform.position = movePosition[movePosition.Length - Random.Range(4, movePosition.Length - 2)];
                 isAttack = false;
                 isMove = false;

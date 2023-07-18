@@ -10,11 +10,17 @@ public class CameraCtrl : MonoBehaviour
     Player player;
 
     public Camera[] cam;
+    public CCTVLight[] cctvLight;
+
+    [SerializeField] Image charge;
 
     [HideInInspector] public bool isOpen;
     [HideInInspector] public bool openCCTV;
 
     bool isSee;
+
+    int count;
+    int lastCamNumber;
 
     public TextMeshProUGUI nameText;
     public GameObject staminaUI;
@@ -30,6 +36,17 @@ public class CameraCtrl : MonoBehaviour
     void Update()
     {
         GameOverCheck();
+    }
+
+    void Flash()
+    {
+        if (mainCam.enabled == false)
+        {
+            if (cctvLight[count].isShutter == false)
+                charge.color = Color.green;
+            else
+                charge.color = Color.red;
+        }
     }
 
     void Stamina()
@@ -52,6 +69,8 @@ public class CameraCtrl : MonoBehaviour
             CCTVCheck();
             MainCamCtrl();
             Stamina();
+            ClearCamCtrl();
+            Flash();
         }
         else
         {
@@ -63,6 +82,36 @@ public class CameraCtrl : MonoBehaviour
                 cam[i].enabled = false;
             }
             mainCam.enabled = true;
+        }
+    }
+
+    void ClearCamCtrl()
+    {
+        if (GameMng.Instance.clearImage.activeSelf == true)
+        {
+            CCTVUI.SetActive(false);
+            for (int i = 0; i < cam.Length; i++)
+            {
+                cam[i].enabled = false;
+            }
+            mainCam.enabled = true;
+            player.isStop = false;
+            isOpen = false;
+            openCCTV = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            GameMng.Instance.aspect.SetActive(false);
+            if (isSee == true)
+            {
+                isSee = false;
+                GameMng.Instance.usePower--;
+                GameMng.Instance.AddPower();
+            }
+            else
+            {
+                isSee = true;
+                GameMng.Instance.usePower++;
+                GameMng.Instance.AddPower();
+            }
         }
     }
 
@@ -84,8 +133,7 @@ public class CameraCtrl : MonoBehaviour
             {
                 AudioMng.Instance.BgmOff("BackGround");
                 AudioMng.Instance.BgmOn("CamBackGround");
-                CamCtrl(0);
-                nameText.text = "RightCorrider";
+                CamCtrl(lastCamNumber);
                 CCTVUI.SetActive(true);
                 openCCTV = true;
             }
@@ -95,6 +143,8 @@ public class CameraCtrl : MonoBehaviour
     public void CamCtrl(int num)
     {
         AudioMng.Instance.BgmOn("CamChange");
+        count = num;
+        lastCamNumber = num;
         for (int i = 0; i < cam.Length; i++)
         {
             cam[i].enabled = false;
@@ -123,6 +173,7 @@ public class CameraCtrl : MonoBehaviour
             GameMng.Instance.aspect.SetActive(false);
             if (mainCam.enabled == false)
             {
+                count = 0;
                 for (int i = 0; i < cam.Length; i++)
                 {
                     cam[i].enabled = false;
